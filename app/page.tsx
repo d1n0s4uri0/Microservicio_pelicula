@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"; // Hooks de React para gestionar el
 
 // Datos mockeados para pruebas en la UI
 import {
+  featuredMovies,
   heroMovies,
   recentMovies,
   nextsMovies,
@@ -17,11 +18,12 @@ import { Filters } from "./ui/Landing/Filters";
 import { MovieGridCard } from "./ui/Landing/MovieGridCard";
 import { MovieListItem } from "./ui/Landing/MovieListItem";
 import { Pagination } from "./ui/Landing/Pagination";
+import FeatureMovies from "./ui/Landing/FeatureMovies";
 import { FeaturedSection } from "./ui/Landing/FeaturedSection";
 import SkeletonLanding from "./ui/Landing/SkeletonLanding"; // Versión de carga de la página
 
 // Iconos
-import { Flame, Calendar } from "lucide-react";
+import { Flame, Calendar, PackageOpen } from "lucide-react";
 
 // Tipos de datos
 import { Movie } from "./types/movie";
@@ -83,6 +85,22 @@ export default function Home() {
     currentPage * moviesPerPage
   );
 
+  function movePage() {
+    const movieListElement = document.getElementById("movie-list");
+    if (movieListElement) {
+      movieListElement.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+
+  useEffect(() => {
+    setCurrentPage(1);
+    movePage();
+  }, [selectedGenre, selectedYear, searchQuery]);
+
+  useEffect(() => {
+    movePage();
+  }, [currentPage]);
+
   if (loading) {
     return <SkeletonLanding />;
   }
@@ -91,7 +109,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-900 text-white">
       <HeroCarousel moviesH={heroMovies} />
 
-      <section className="container mx-auto px-4 py-16">
+      <section id="movie-list" className="container mx-auto px-4 py-16">
         <Filters
           selectedGenre={selectedGenre}
           setSelectedGenre={setSelectedGenre}
@@ -105,19 +123,26 @@ export default function Home() {
           years={years}
         />
 
-        {viewMode === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {paginatedMovies.map((movie) => (
-              <MovieGridCard key={movie.id} movie={movie} />
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {paginatedMovies.map((movie) => (
-              <MovieListItem key={movie.id} movie={movie} />
-            ))}
-          </div>
-        )}
+        <section className="mt-12">
+          {filteredMovies.length === 0 ? (
+            <h2 className="text-2xl text-center ">
+              <PackageOpen className="mx-auto h-24 w-24 text-gray-400 " />
+              No se encontraron películas
+            </h2>
+          ) : viewMode === "grid" ? (
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {paginatedMovies.map((movie) => (
+                <MovieGridCard key={movie.id} movie={movie} />
+              ))}
+            </section>
+          ) : (
+            <section className="space-y-6">
+              {paginatedMovies.map((movie) => (
+                <MovieListItem key={movie.id} movie={movie} />
+              ))}
+            </section>
+          )}
+        </section>
 
         {totalPages > 1 && (
           <Pagination
@@ -127,6 +152,8 @@ export default function Home() {
           />
         )}
       </section>
+
+      <FeatureMovies movies={featuredMovies.slice(0, 3)}></FeatureMovies>
 
       <section className="py-16">
         <div className="container mx-auto px-4">

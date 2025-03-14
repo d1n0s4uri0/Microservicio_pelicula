@@ -38,7 +38,7 @@ export function HeroCarousel({ moviesH }: { moviesH: Movie[] }) {
               key={movie.id}
               className="relative w-full h-full"
               style={{
-                backgroundImage: `url("https://i.pinimg.com/originals/76/71/5e/76715ecff73dbd26359a6216966eede4.jpg")`,
+                backgroundImage: `url("${movie.heroposter}")`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
