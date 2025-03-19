@@ -1,0 +1,40 @@
+# Etapa de construcción (instala dependencias y construye la app)
+FROM node:18-alpine AS builder
+
+# Directorio de trabajo en el contenedor
+WORKDIR /app
+
+# Copiar solo los archivos necesarios para instalar dependencias
+COPY project/package.json project/package-lock.json* project/pnpm-lock.yaml* ./
+
+# Instalar dependencias (usa npm o pnpm según tu gestor)
+RUN if [ -f package-lock.json ]; then npm ci --production; \
+    elif [ -f pnpm-lock.yaml ]; then npm install -g pnpm && pnpm i --frozen-lockfile; fi
+
+# Copiar todo el código del frontend (carpeta "project")
+COPY project .
+
+# Construir la aplicación para producción
+RUN npm run build
+
+# ---
+
+# Etapa de producción (imagen final ligera)
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+# Copiar solo lo necesario desde la etapa de construcción
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
+# Variables de entorno para Next.js
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Puerto expuesto (coincide con el configurado en Next.js)
+EXPOSE 3000
+
+# Comando para iniciar la app
+CMD ["npm", "start"]
