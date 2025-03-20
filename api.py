@@ -1,7 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from db_connection import Database
 from pydantic import BaseModel
+from fastapi import Request  # Asegúrate de importar Request
 
 app = FastAPI()
 db = Database()  # Singleton instance
@@ -26,10 +28,14 @@ async def shutdown():
         await db._pool.close()  # Close pool on shutdown
 
 
-@app.route('/movies', methods=['GET'])
-def get_movies():
+
+    
+
+@app.get('/movies')
+async def get_movies(request: Request):
     try:
-        result = db.fetch("SELECT * FROM movies;")
-        return jsonify(result), 200
+        result = await db.fetch("SELECT * FROM movies;")
+        movies = [dict(movie) for movie in result]
+        return JSONResponse(movies, status_code=200)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        raise HTTPException(status_code=500, detail=str(e))
