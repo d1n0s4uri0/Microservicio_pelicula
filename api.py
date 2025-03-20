@@ -28,7 +28,9 @@ async def shutdown():
         await db._pool.close()  # Close pool on shutdown
 
 
-
+@app.get("/")
+async def root():
+    return {"message": "API de películas en funcionamiento 🎥"}
     
 
 @app.get('/movies')
