@@ -153,7 +153,9 @@ export default function Home() {
         )}
       </section>
 
-      <FeatureMovies movies={featuredMovies.slice(0, 3)}></FeatureMovies>
+      <section className="container mx-auto px-4 py-16">
+        <FeatureMovies movies={featuredMovies.slice(0, 10)}></FeatureMovies>
+      </section>
 
       <section className="py-16">
         <div className="container mx-auto px-4">
