@@ -33,7 +33,7 @@ export default function FeatureMovies({ movies }: { movies: Movie[] }) {
             slidesPerView: 5,
           },
         }}
-        className="relative"
+        className="!pb-12 relative"
       >
         {movies.map((movie, index) => (
           <SwiperSlide key={movie.id}>

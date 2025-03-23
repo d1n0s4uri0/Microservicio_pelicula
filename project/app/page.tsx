@@ -46,7 +46,7 @@ export default function Home() {
       const scrollPosition = window.scrollY + window.innerHeight;
       const totalHeight = document.body.scrollHeight;
       if (scrollPosition >= totalHeight) {
-        setCurrentPage((prev) => prev + 1);
+        //to do
       }
     };
 
